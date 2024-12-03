@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        jcenter() // Jika diperlukan, bisa diganti dengan mavenCentral()
     }
 
     dependencies {

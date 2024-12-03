@@ -1,13 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'screens/Home_Screens.dart';
+import 'screens/Control.dart';
+import 'dart:async'; // Untuk Timer
 
 void main() {
   runApp(
     MaterialApp(
       title: 'Bottom Navigation Bar',
-      home: HomePage(),
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(), // Set splash screen sebagai halaman pertama
     ),
   );
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Delay untuk splash screen selama 3 detik
+    Future.delayed(Duration(seconds: 3), () {
+      // Setelah 3 detik, navigasi ke HomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Image.asset('assets/logo.png'),  // Ganti dengan path logo Anda
+      ),
+    );
+  }
 }
 
 class HomePage extends StatefulWidget {
@@ -16,116 +49,72 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  var currentIndex = 0;
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
+      body: IndexedStack(
+        index: currentIndex,
+        children: [
+          HomeScreen(),
+          Control(),
+        ],
+      ),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.all(displayWidth * .05),
-        height: displayWidth * .155,
+        margin: EdgeInsets.symmetric(
+          horizontal: displayWidth * 0.1, // Jarak horizontal di sisi kiri dan kanan
+          vertical: displayWidth * 0.03, // Jarak vertikal dari bawah layar
+        ),
+        height: displayWidth * 0.15, // Menyesuaikan tinggi bottom navigation
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(.1),
-              blurRadius: 30,
-              offset: Offset(0, 10),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: Offset(0, 5),
             ),
           ],
           borderRadius: BorderRadius.circular(50),
         ),
-        child: ListView.builder(
-          itemCount: 4,
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: displayWidth * .02),
-          itemBuilder: (context, index) => InkWell(
-            onTap: () {
-              setState(() {
-                currentIndex = index;
-                HapticFeedback.lightImpact();
-              });
-            },
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            child: Stack(
-              children: [
-                AnimatedContainer(
-                  duration: Duration(seconds: 1),
-                  curve: Curves.fastLinearToSlowEaseIn,
-                  width: index == currentIndex
-                      ? displayWidth * .32
-                      : displayWidth * .18,
-                  alignment: Alignment.center,
-                  child: AnimatedContainer(
-                    duration: Duration(seconds: 1),
-                    curve: Curves.fastLinearToSlowEaseIn,
-                    height: index == currentIndex ? displayWidth * .12 : 0,
-                    width: index == currentIndex ? displayWidth * .32 : 0,
-                    decoration: BoxDecoration(
-                      color: index == currentIndex
-                          ? Colors.blueAccent.withOpacity(.2)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(50),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(
+            listOfIcons.length,
+            (index) => InkWell(
+              onTap: () {
+                setState(() {
+                  currentIndex = index;
+                });
+              },
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    listOfIcons[index],
+                    size: displayWidth * 0.08, // Ukuran ikon lebih besar
+                    color: currentIndex == index
+                        ? const Color.fromARGB(255, 255, 68, 68)
+                        : Colors.black26,
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    listOfStrings[index],
+                    style: TextStyle(
+                      fontSize: displayWidth * 0.03,
+                      fontWeight: FontWeight.w600,
+                      color: currentIndex == index
+                          ? const Color.fromARGB(255, 255, 68, 68)
+                          : Colors.black26,
                     ),
                   ),
-                ),
-                AnimatedContainer(
-                  duration: Duration(seconds: 1),
-                  curve: Curves.fastLinearToSlowEaseIn,
-                  width: index == currentIndex
-                      ? displayWidth * .31
-                      : displayWidth * .18,
-                  alignment: Alignment.center,
-                  child: Stack(
-                    children: [
-                      Row(
-                        children: [
-                          AnimatedContainer(
-                            duration: Duration(seconds: 1),
-                            curve: Curves.fastLinearToSlowEaseIn,
-                            width:
-                                index == currentIndex ? displayWidth * .13 : 0,
-                          ),
-                          AnimatedOpacity(
-                            opacity: index == currentIndex ? 1 : 0,
-                            duration: Duration(seconds: 1),
-                            curve: Curves.fastLinearToSlowEaseIn,
-                            child: Text(
-                              index == currentIndex
-                                  ? '${listOfStrings[index]}'
-                                  : '',
-                              style: TextStyle(
-                                color: Colors.blueAccent,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          AnimatedContainer(
-                            duration: Duration(seconds: 1),
-                            curve: Curves.fastLinearToSlowEaseIn,
-                            width:
-                                index == currentIndex ? displayWidth * .03 : 20,
-                          ),
-                          Icon(
-                            listOfIcons[index],
-                            size: displayWidth * .076,
-                            color: index == currentIndex
-                                ? Colors.blueAccent
-                                : Colors.black26,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -135,15 +124,11 @@ class HomePageState extends State<HomePage> {
 
   List<IconData> listOfIcons = [
     Icons.home_rounded,
-    Icons.favorite_rounded,
-    Icons.settings_rounded,
-    Icons.person_rounded,
+    Icons.dashboard,
   ];
 
   List<String> listOfStrings = [
     'Home',
-    'Favorite',
-    'Settings',
-    'Account',
+    'Control',
   ];
 }

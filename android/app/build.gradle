@@ -25,22 +25,25 @@ apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33 // Pastikan sesuai SDK Manager Anda.
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.bottom_navigation_bar"
-        minSdkVersion 16
-        targetSdkVersion 30
+        applicationId "com.example.bottom_navigation_bar" // Ganti dengan aplikasi ID Anda.
+        minSdkVersion 21 // Minimum SDK yang didukung.
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            shrinkResources true // Menghapus resource tidak terpakai.
+            minifyEnabled true // Mengaktifkan optimasi APK.
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.debug // Untuk debug APK
+            // Untuk release APK, gunakan konfigurasi signing keystore:
+            // signingConfig signingConfigs.release
         }
     }
 }
